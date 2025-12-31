@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * cursor-history-mcp: MCP server for Cursor AI chat history
  *
