@@ -1,0 +1,50 @@
+{
+  "name": "cursor-history-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for browsing, searching, and exporting Cursor AI chat history",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "cursor-history-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cursor",
+    "chat-history",
+    "ai",
+    "claude"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.0",
+    "cursor-history": "0.8.0",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/node": "22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
+    "eslint": "^9.39.2",
+    "tsup": "8.3.5",
+    "typescript": "5.7.2",
+    "typescript-eslint": "^8.51.0",
+    "vitest": "2.1.8"
+  },
+  "files": [
+    "dist"
+  ]
+}

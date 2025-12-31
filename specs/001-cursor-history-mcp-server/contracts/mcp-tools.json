@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP Tools Schema: cursor-history-mcp",
+  "description": "JSON Schema definitions for all MCP tools exposed by cursor-history-mcp server",
+  "tools": [
+    {
+      "name": "cursor_history_list",
+      "description": "List Cursor AI chat sessions. Returns recent sessions with metadata including workspace, message count, and timestamps.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of sessions to return (default: 20, max: 1000)",
+            "minimum": 1,
+            "maximum": 1000,
+            "default": 20
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Number of sessions to skip for pagination (default: 0)",
+            "minimum": 0,
+            "default": 0
+          },
+          "workspace": {
+            "type": "string",
+            "description": "Filter sessions by workspace path (absolute path to project folder)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_show",
+      "description": "Show the full content of a specific Cursor AI chat session including all messages, tool calls, and AI responses.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sessionIndex": {
+            "type": "integer",
+            "description": "The session index (1-based, as shown in list output)",
+            "minimum": 1
+          }
+        },
+        "required": ["sessionIndex"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_search",
+      "description": "Search across all Cursor AI chat sessions for a keyword or phrase. Returns matching sessions with context around each match.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query (keyword or phrase to find)",
+            "minLength": 1
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of results to return (default: 10)",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+          },
+          "context": {
+            "type": "integer",
+            "description": "Number of characters of context to show around each match (default: 50)",
+            "minimum": 0,
+            "maximum": 500,
+            "default": 50
+          }
+        },
+        "required": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_export",
+      "description": "Export a Cursor AI chat session to Markdown or JSON format. Returns the formatted content.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sessionIndex": {
+            "type": "integer",
+            "description": "The session index (1-based, as shown in list output)",
+            "minimum": 1
+          },
+          "format": {
+            "type": "string",
+            "description": "Export format: 'markdown' for human-readable, 'json' for structured data",
+            "enum": ["markdown", "json"],
+            "default": "markdown"
+          }
+        },
+        "required": ["sessionIndex"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_backup",
+      "description": "Create a backup of all Cursor AI chat history. Saves a portable archive that can be restored later.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "outputPath": {
+            "type": "string",
+            "description": "Path where the backup file should be saved. If not specified, saves to ~/cursor-history-backups/ with a timestamp."
+          },
+          "force": {
+            "type": "boolean",
+            "description": "Overwrite existing backup file if it exists (default: false)",
+            "default": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_restore",
+      "description": "⚠️ DESTRUCTIVE: Restore Cursor AI chat history from a backup file. This operation OVERWRITES your current chat history. Consider creating a backup of your current data first using cursor_history_backup.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "backupPath": {
+            "type": "string",
+            "description": "Path to the backup file to restore from"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "Skip confirmation and force overwrite of existing data (default: false)",
+            "default": false
+          }
+        },
+        "required": ["backupPath"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cursor_history_migrate",
+      "description": "⚠️ DESTRUCTIVE: Move or copy chat sessions between workspaces. When moving (not copying), the original session is deleted. Consider creating a backup first using cursor_history_backup.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sessionIndexes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "List of session indexes to migrate (1-based, as shown in list output)",
+            "minItems": 1
+          },
+          "destination": {
+            "type": "string",
+            "description": "Absolute path to the destination workspace folder"
+          },
+          "mode": {
+            "type": "string",
+            "description": "Migration mode: 'move' deletes original, 'copy' keeps original",
+            "enum": ["move", "copy"],
+            "default": "move"
+          }
+        },
+        "required": ["sessionIndexes", "destination"],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "errors": {
+    "-32001": {
+      "name": "DatabaseNotFound",
+      "message": "Cursor data not found. Please ensure Cursor IDE is installed and has been used at least once."
+    },
+    "-32002": {
+      "name": "DatabaseLocked",
+      "message": "Cursor database is locked. Please close Cursor IDE and try again, or retry read operations which may work."
+    },
+    "-32003": {
+      "name": "SessionNotFound",
+      "message": "Session not found. Please check the session index using cursor_history_list."
+    },
+    "-32004": {
+      "name": "WorkspaceNotFound",
+      "message": "Workspace not found. Please verify the workspace path exists."
+    },
+    "-32005": {
+      "name": "BackupFailed",
+      "message": "Backup operation failed. Check file permissions and available disk space."
+    },
+    "-32006": {
+      "name": "RestoreFailed",
+      "message": "Restore operation failed. The backup file may be corrupted or inaccessible."
+    },
+    "-32007": {
+      "name": "InvalidBackup",
+      "message": "Invalid or corrupted backup file. Please verify the backup file integrity."
+    }
+  }
+}
