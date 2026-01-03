@@ -4,7 +4,7 @@ Auto-generated from all feature plans. Last updated: 2025-12-31
 
 ## Active Technologies
 
-- TypeScript 5.0+ with Node.js 20+ + `@modelcontextprotocol/sdk`, `cursor-history@0.8.0` (001-cursor-history-mcp-server)
+- TypeScript 5.0+ with Node.js 20+ + `@modelcontextprotocol/sdk`, `cursor-history@0.9.1` (001-cursor-history-mcp-server)
 
 ## Project Structure
 

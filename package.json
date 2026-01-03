@@ -1,20 +1,20 @@
 {
   "name": "cursor-history-mcp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "MCP server for browsing, searching, and exporting Cursor AI chat history",
   "repository": {
     "type": "git",
     "url": "https://github.com/S2thend/cursor-history-mcp"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "bin": {
-    "cursor-history-mcp": "dist/index.js"
+    "cursor-history-mcp": "dist/index.cjs"
   },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "start": "node dist/index.js",
+    "start": "node dist/index.cjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test": "vitest"
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.0",
-    "cursor-history": "0.8.0",
+    "cursor-history": "0.9.1",
     "zod": "3.24.1"
   },
   "devDependencies": {
