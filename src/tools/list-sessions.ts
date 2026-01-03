@@ -57,7 +57,7 @@ export async function handleListSessions(
   try {
     const parsed = ListInputSchema.parse(args);
 
-    const result = listSessions({
+    const result = await listSessions({
       limit: parsed.limit,
       offset: parsed.offset,
       workspace: parsed.workspace,

@@ -44,7 +44,7 @@ export async function handleShowSession(
     const parsed = ShowInputSchema.parse(args);
 
     // cursor-history uses 0-based indexing internally
-    const session = getSession(parsed.sessionIndex - 1);
+    const session = await getSession(parsed.sessionIndex - 1);
 
     // Extract workspace name from path
     const workspaceName = session.workspace

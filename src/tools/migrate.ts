@@ -66,7 +66,7 @@ export async function handleMigrate(
     // Convert 1-based indexes to 0-based for the library
     const zeroBasedIndexes = parsed.sessionIndexes.map((i) => i - 1);
 
-    const results = migrateSession({
+    const results = await migrateSession({
       sessions: zeroBasedIndexes,
       destination: parsed.destination,
       mode: mode,

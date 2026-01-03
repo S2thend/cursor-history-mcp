@@ -56,10 +56,10 @@ export async function handleExport(
     const index = parsed.sessionIndex - 1;
 
     if (format === "json") {
-      const result = exportSessionToJson(index);
+      const result = await exportSessionToJson(index);
       return JSON.stringify(result, null, 2);
     } else {
-      const result = exportSessionToMarkdown(index);
+      const result = await exportSessionToMarkdown(index);
       return result;
     }
   } catch (error) {

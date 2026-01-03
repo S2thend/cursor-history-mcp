@@ -60,7 +60,7 @@ export async function handleSearch(
   try {
     const parsed = SearchInputSchema.parse(args);
 
-    const results = searchSessions(parsed.query, {
+    const results = await searchSessions(parsed.query, {
       limit: parsed.limit,
       context: parsed.context,
     });
