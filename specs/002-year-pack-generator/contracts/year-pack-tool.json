@@ -1,0 +1,329 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "cursor_history_year_pack MCP Tool",
+  "description": "MCP tool contract for generating annual chat history summary",
+  "type": "object",
+  "properties": {
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "const": "cursor_history_year_pack"
+        },
+        "description": {
+          "const": "Generate a year-in-review data package from Cursor AI chat history. Produces a sanitized JSON summary with statistics, topics, and keywords, plus a prompt template for LLM-based report generation. Read-only operation."
+        },
+        "inputSchema": {
+          "$ref": "#/definitions/YearPackInput"
+        }
+      },
+      "required": ["name", "description", "inputSchema"]
+    },
+    "output": {
+      "$ref": "#/definitions/YearPackOutput"
+    }
+  },
+  "definitions": {
+    "YearPackInput": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "type": "integer",
+          "description": "Calendar year to analyze (default: current year)",
+          "minimum": 1970,
+          "maximum": 2100
+        },
+        "language": {
+          "type": "string",
+          "description": "Report language preference (default: en)",
+          "enum": ["en", "zh"],
+          "default": "en"
+        },
+        "workspace": {
+          "type": "string",
+          "description": "Optional workspace path to filter sessions"
+        },
+        "maxSamples": {
+          "type": "integer",
+          "description": "Maximum sample questions to include (default: 30)",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 30
+        },
+        "maxSampleLength": {
+          "type": "integer",
+          "description": "Maximum characters per sample (default: 120)",
+          "minimum": 50,
+          "maximum": 500,
+          "default": 120
+        },
+        "topicsCount": {
+          "type": "integer",
+          "description": "Number of topics to extract (default: 7)",
+          "minimum": 3,
+          "maximum": 15,
+          "default": 7
+        }
+      },
+      "additionalProperties": false
+    },
+    "YearPackOutput": {
+      "type": "object",
+      "properties": {
+        "yearPack": {
+          "$ref": "#/definitions/YearPack"
+        },
+        "promptTemplate": {
+          "type": "string",
+          "description": "Complete prompt template for LLM report generation"
+        }
+      },
+      "required": ["yearPack", "promptTemplate"]
+    },
+    "YearPack": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "$ref": "#/definitions/YearPackMeta"
+        },
+        "stats": {
+          "$ref": "#/definitions/YearPackStats"
+        },
+        "lengthBuckets": {
+          "$ref": "#/definitions/LengthBuckets"
+        },
+        "keywords": {
+          "$ref": "#/definitions/YearPackKeywords"
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Topic"
+          },
+          "maxItems": 15
+        },
+        "samples": {
+          "$ref": "#/definitions/YearPackSamples"
+        },
+        "safety": {
+          "$ref": "#/definitions/YearPackSafety"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["meta", "stats", "lengthBuckets", "keywords", "topics", "samples", "safety", "notes"]
+    },
+    "YearPackMeta": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "type": "integer"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["en", "zh"]
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workspace": {
+          "type": ["string", "null"]
+        },
+        "questionCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sessionCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["year", "language", "generatedAt", "workspace", "questionCount", "sessionCount"]
+    },
+    "YearPackStats": {
+      "type": "object",
+      "properties": {
+        "totalQuestions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeMonths": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "monthlyDistribution": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Keys in YYYY-MM format, values are question counts"
+        }
+      },
+      "required": ["totalQuestions", "activeMonths", "monthlyDistribution"]
+    },
+    "LengthBuckets": {
+      "type": "object",
+      "properties": {
+        "short": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Questions 0-100 chars"
+        },
+        "medium": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Questions 101-280 chars"
+        },
+        "long": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Questions 281+ chars"
+        }
+      },
+      "required": ["short", "medium", "long"]
+    },
+    "YearPackKeywords": {
+      "type": "object",
+      "properties": {
+        "topUnigrams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeywordItem"
+          },
+          "maxItems": 50
+        },
+        "topBigrams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeywordItem"
+          },
+          "maxItems": 30
+        }
+      },
+      "required": ["topUnigrams", "topBigrams"]
+    },
+    "KeywordItem": {
+      "type": "object",
+      "properties": {
+        "term": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": ["term", "count"]
+    },
+    "Topic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string"
+        },
+        "share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10
+        },
+        "trend": {
+          "$ref": "#/definitions/TopicTrend"
+        }
+      },
+      "required": ["id", "name", "share", "keywords", "trend"]
+    },
+    "TopicTrend": {
+      "type": "object",
+      "properties": {
+        "early": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share in Jan-Apr"
+        },
+        "mid": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share in May-Aug"
+        },
+        "late": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share in Sep-Dec"
+        }
+      },
+      "required": ["early", "mid", "late"]
+    },
+    "YearPackSamples": {
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100
+        },
+        "maxLength": {
+          "type": "integer"
+        }
+      },
+      "required": ["questions", "maxLength"]
+    },
+    "YearPackSafety": {
+      "type": "object",
+      "properties": {
+        "filtersApplied": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "user_messages_only",
+              "code_blocks_removed",
+              "commands_removed",
+              "paths_masked",
+              "urls_masked",
+              "emails_masked",
+              "ips_masked",
+              "secrets_masked",
+              "truncated_long_text"
+            ]
+          }
+        },
+        "guarantees": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "no_executable_content",
+              "no_file_paths",
+              "no_urls",
+              "no_credentials"
+            ]
+          }
+        }
+      },
+      "required": ["filtersApplied", "guarantees"]
+    }
+  }
+}

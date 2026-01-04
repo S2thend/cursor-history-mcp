@@ -20,6 +20,7 @@ import { exportTool, handleExport } from "./tools/export.js";
 import { backupTool, handleBackup } from "./tools/backup.js";
 import { restoreTool, handleRestore } from "./tools/restore.js";
 import { migrateTool, handleMigrate } from "./tools/migrate.js";
+import { yearPackTool, handleYearPack } from "./tools/year-pack/index.js";
 
 /**
  * All available tools
@@ -32,6 +33,7 @@ const TOOLS = [
   backupTool,
   restoreTool,
   migrateTool,
+  yearPackTool,
 ];
 
 /**
@@ -48,6 +50,7 @@ const TOOL_HANDLERS: Record<
   cursor_history_backup: handleBackup,
   cursor_history_restore: handleRestore,
   cursor_history_migrate: handleMigrate,
+  cursor_history_year_pack: handleYearPack,
 };
 
 /**

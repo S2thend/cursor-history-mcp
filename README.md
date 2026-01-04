@@ -53,6 +53,7 @@ Add to your Claude Desktop configuration (`~/.claude/claude_desktop_config.json`
 | `cursor_history_backup` | Create backup of all history |
 | `cursor_history_restore` | Restore from backup (destructive) |
 | `cursor_history_migrate` | Move/copy sessions between workspaces (destructive) |
+| `cursor_history_year_pack` | Generate year-in-review data package with stats, topics, and prompt template |
 
 ## Usage Examples
 
