@@ -114,7 +114,8 @@ describe("sanitizer", () => {
 
   describe("maskSecrets", () => {
     it("should mask API keys with common prefixes", () => {
-      const input = "Use sk_live_abc123def456ghi789jkl012345678901234";
+      // Using a clearly fake key pattern to avoid GitHub secret scanning false positives
+      const input = "Use sk_test_" + "x".repeat(32);
       expect(maskSecrets(input)).toBe("Use [SECRET]");
     });
 
