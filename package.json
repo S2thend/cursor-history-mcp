@@ -27,7 +27,7 @@
     "ai",
     "claude"
   ],
-  "author": "",
+  "author": "Borui Cai",
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"

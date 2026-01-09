@@ -14,6 +14,8 @@
 
 Bring your Cursor AI chat history directly into Claude. Search past conversations, export sessions, create backups, and generate year-in-review reports—all through natural language. Built on the [Model Context Protocol](https://modelcontextprotocol.io/) for seamless AI assistant integration.
 
+Free, open-source, and MIT licensed. Built by the community, for the community.
+
 ## Installation
 
 No installation required! Run directly via npx:
@@ -85,6 +87,13 @@ After configuring, ask your AI assistant:
 
 - Node.js 20+
 - Cursor IDE installed with existing chat history
+
+## Contributing
+
+Contributions are welcome! Whether it's bug reports, feature requests, documentation improvements, or code contributions—all PRs and issues are appreciated.
+
+- [Open an issue](https://github.com/S2thend/cursor-history-mcp/issues)
+- [Submit a pull request](https://github.com/S2thend/cursor-history-mcp/pulls)
 
 ## License
 
