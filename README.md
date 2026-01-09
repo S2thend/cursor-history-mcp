@@ -1,6 +1,18 @@
-# cursor-history-mcp
+# Cursor History MCP
 
-MCP server for browsing, searching, and exporting Cursor AI chat history.
+<p align="center">
+  <img src="docs/cursor-history-mcp-logo.jpg" alt="cursor-history-mcp logo" width="200">
+</p>
+
+[![npm version](https://img.shields.io/npm/v/cursor-history-mcp.svg)](https://www.npmjs.com/package/cursor-history-mcp)
+[![npm downloads](https://img.shields.io/npm/dm/cursor-history-mcp.svg)](https://www.npmjs.com/package/cursor-history-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg)](https://www.typescriptlang.org/)
+
+**MCP server for browsing, searching, exporting, and backing up your Cursor AI chat history.**
+
+Bring your Cursor AI chat history directly into Claude. Search past conversations, export sessions, create backups, and generate year-in-review reports—all through natural language. Built on the [Model Context Protocol](https://modelcontextprotocol.io/) for seamless AI assistant integration.
 
 ## Installation
 
@@ -11,6 +23,10 @@ npx cursor-history-mcp
 ```
 
 ## Configuration
+
+### Cursor
+
+![cursor-mcp-setup](./docs/cursor-mcp-setup.gif)
 
 ### Claude Code
 
