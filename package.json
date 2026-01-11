@@ -1,6 +1,7 @@
 {
   "name": "cursor-history-mcp",
-  "version": "0.2.2",
+  "version": "0.2.3",
+  "mcpName": "io.github.s2thend/cursor-history",
   "description": "MCP server for browsing, searching, and exporting Cursor AI chat history",
   "repository": {
     "type": "git",

@@ -45,7 +45,7 @@ jobs:
       - name: Set version in server.json
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
+          jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' server.json > server.tmp && mv server.tmp server.json
 
       - name: Publish to MCP Registry
         run: ./mcp-publisher publish
