@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.s2thend/cursor-history",
+  "name": "io.github.S2thend/cursor-history",
   "description": "MCP server for browsing, searching, exporting, and backing up your Cursor AI chat history",
   "repository": {
     "url": "https://github.com/S2thend/cursor-history-mcp",
     "source": "github"
   },
-  "version": "0.2.3",
+  "version": "0.2.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "cursor-history-mcp",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "transport": {
         "type": "stdio"
       }
