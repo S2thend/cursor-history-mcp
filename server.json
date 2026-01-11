@@ -1,0 +1,12 @@
+{
+  "$schema": "https://registry.modelcontextprotocol.io/schema.json",
+  "name": "cursor-history-mcp",
+  "description": "MCP server for browsing, searching, exporting, and backing up your Cursor AI chat history",
+  "repository": "https://github.com/S2thend/cursor-history-mcp",
+  "version": "0.2.1",
+  "packages": {
+    "npm": {
+      "name": "cursor-history-mcp"
+    }
+  }
+}
