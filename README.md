@@ -16,6 +16,30 @@ Bring your Cursor AI chat history directly into Claude. Search past conversation
 
 Free, open-source, and MIT licensed. Built by the community, for the community.
 
+## Why This Project?
+
+There are other Cursor history tools out there (like the Python-based [Cursor-history-MCP](https://github.com/Nossim/Cursor-history-MCP)). Here's what makes this one different:
+
+| Feature | cursor-history-mcp (this project) | Other Solutions |
+|---------|-----------------------------------|-----------------|
+| **Setup** | `npx cursor-history-mcp` - zero install | Docker, Python, dependencies |
+| **Speed** | Instant - direct SQLite reads | Slow - requires LLM vectorization |
+| **Search** | Grep-style text matching - precise & stable | Vector retrieval - unpredictable results |
+| **LLM Required** | No - works offline | Yes - needs Ollama/embeddings |
+| **Language** | TypeScript (type-safe) | Python |
+| **Backup/Restore** | Built-in | Not available |
+| **Migration** | Move sessions between workspaces | Not available |
+| **Dependencies** | Minimal (just Node.js) | Docker, LanceDB, Ollama, FastAPI |
+
+### Key Advantages
+
+- **Blazing Fast**: No embedding or vectorization step. Reads directly from Cursor's native SQLite database, so results are instant.
+- **Grep-Style Search**: Uses direct text matching instead of vector retrieval. More lightweight, predictable, and stable for most use cases—no hallucinated results, no embedding drift, and exact matches every time.
+- **Zero Configuration**: Run with `npx` - no Docker containers, no Python environments, no API keys, no LLM setup.
+- **Works Offline**: Everything runs locally without any external services or AI models.
+- **Data Portability**: Full backup, restore, and cross-workspace migration capabilities to keep your chat history safe and portable.
+- **Lightweight**: ~50KB package vs multi-GB Docker images with vector databases.
+
 ## Installation
 
 No installation required! Run directly via npx:
