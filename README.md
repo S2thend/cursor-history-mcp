@@ -10,6 +10,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg)](https://www.typescriptlang.org/)
 
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=cursor-history&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImN1cnNvci1oaXN0b3J5LW1jcCJdfQ==)
+
 **MCP server for browsing, searching, exporting, and backing up your Cursor AI chat history.**
 
 Bring your Cursor AI chat history directly into Claude. Search past conversations, export sessions, create backups, and generate year-in-review reports—all through natural language. Built on the [Model Context Protocol](https://modelcontextprotocol.io/) for seamless AI assistant integration.
