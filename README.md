@@ -1,5 +1,7 @@
 # Cursor History MCP
 
+[🇨🇳 中文文档](docs/README_zh.md) | [🇫🇷 Français](docs/README_fr.md) | [🇪🇸 Español](docs/README_es.md)
+
 <p align="center">
   <img src="docs/cursor-history-mcp-logo.jpg" alt="cursor-history-mcp logo" width="200">
 </p>
@@ -24,14 +26,14 @@ There are other Cursor history tools out there (like the Python-based [Cursor-hi
 
 | Feature | cursor-history-mcp (this project) | Other Solutions |
 |---------|-----------------------------------|-----------------|
-| **Setup** | `npx cursor-history-mcp` - zero install | Docker, Python, dependencies |
-| **Speed** | Instant - direct SQLite reads | Slow - requires LLM vectorization |
-| **Search** | Grep-style text matching - precise & stable | Vector retrieval - unpredictable results |
-| **LLM Required** | No - works offline | Yes - needs Ollama/embeddings |
-| **Language** | TypeScript (type-safe) | Python |
-| **Backup/Restore** | Built-in | Not available |
-| **Migration** | Move sessions between workspaces | Not available |
-| **Dependencies** | Minimal (just Node.js) | Docker, LanceDB, Ollama, FastAPI |
+| 📦 **Setup** | ✅ `npx cursor-history-mcp` - zero install | ❌ Docker, Python, dependencies |
+| ⚡ **Speed** | ✅ Instant - direct SQLite reads | ❌ Slow - requires LLM vectorization |
+| 🔍 **Search** | ✅ Grep-style text matching - precise & stable | ❌ Vector retrieval - unpredictable results |
+| 🤖 **LLM Required** | ✅ No - works offline | ❌ Yes - needs Ollama/embeddings |
+| 🛠️ **Language** | ✅ TypeScript (type-safe) | ⚠️ Python |
+| 💾 **Backup/Restore** | ✅ Built-in | ❌ Not available |
+| 🚚 **Migration** | ✅ Move sessions between workspaces | ❌ Not available |
+| 📋 **Dependencies** | ✅ Minimal (just Node.js) | ❌ Docker, LanceDB, Ollama, FastAPI |
 
 ### Key Advantages
 
@@ -98,6 +100,27 @@ Add to your Claude Desktop configuration (`~/.claude/claude_desktop_config.json`
 | `cursor_history_restore` | Restore from backup (destructive) |
 | `cursor_history_migrate` | Move/copy sessions between workspaces (destructive) |
 | `cursor_history_year_pack` | Generate year-in-review data package with stats, topics, and prompt template |
+
+## 🎆 Year in Review
+
+Generate a personalized annual report from your Cursor AI chat history — discover your coding patterns, favorite topics, and development journey.
+
+### What You Get
+
+| | |
+|---|---|
+| 📊 **Chat Stats** | Total questions, active months, monthly activity |
+| 🏷️ **Topic Discovery** | Auto-detected coding topics and interests |
+| 📈 **Trend Tracking** | How your focus shifted throughout the year |
+| 🔑 **Keywords** | Your most-used terms and phrases |
+| 🔒 **Privacy Safe** | Sensitive data automatically masked |
+| 📝 **LLM Prompt** | Ready-to-use prompt for a polished report |
+
+### Try It
+
+- "Generate my 2025 Cursor year in review"
+- "Create a year pack for ~/myapp"
+- "Generate my 2025 year in review in English"
 
 ## Usage Examples
 
