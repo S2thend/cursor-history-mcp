@@ -23,39 +23,44 @@ Basé sur [cursor-history](https://github.com/S2thend/cursor-history), ce serveu
 
 Prérequis : Node.js **20.x ou 22.x–26.x**, un historique Cursor local lisible et un client MCP compatible stdio. Le serveur doit avoir accès à la machine contenant cet historique.
 
-**Limite de publication : ce code utilise `cursor-history@0.18.0`. Le paquet publié `cursor-history-mcp@0.2.4` utilise encore l'ancien lecteur. En attendant une nouvelle publication MCP, utilisez la compilation locale pour les capacités décrites ici.**
+**Version documentée : `cursor-history-mcp@0.3.0`, avec le lecteur `cursor-history@0.18.0`. Pour tester le code avant sa publication npm, utilisez la [configuration depuis les sources](#run-from-source) ci-dessous.**
 
-Depuis ce dépôt :
-
-```bash
-npm ci
-npm run build
-```
-
-Fusionnez cette entrée avec la configuration de votre client, en remplaçant le chemin absolu :
+Fusionnez cette entrée npm avec la configuration de votre client :
 
 ```json
 {
   "mcpServers": {
     "cursor-history": {
-      "command": "node",
-      "args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]
+      "command": "npx",
+      "args": ["-y", "cursor-history-mcp@0.3.0"]
     }
   }
 }
 ```
 
-Si nécessaire, indiquez aussi le chemin absolu de Node. Ne remplacez pas les autres serveurs déjà configurés.
+Si le client ne trouve pas `npx`, indiquez le chemin absolu de cet exécutable. Ne remplacez pas les autres serveurs déjà configurés.
 
 - **Cursor** : fichier de projet `.cursor/mcp.json` ou fichier global `~/.cursor/mcp.json`, puis activez le serveur. [Documentation Cursor](https://cursor.com/docs/mcp).
 - **Claude Desktop** : Settings → Developer → Edit Config ; fusionnez la configuration puis redémarrez. macOS : `~/Library/Application Support/Claude/claude_desktop_config.json`. Windows : `%APPDATA%\Claude\claude_desktop_config.json`. [Guide des serveurs locaux](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
 - **Claude Code** : commande ci-dessous. Consultez les [portées et permissions](https://code.claude.com/docs/en/mcp).
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- node /absolute/path/to/cursor-history-mcp/dist/index.cjs
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
 ```
 
-Pour la version npm publiée, utilisez `"command": "npx"` et `"args": ["-y", "cursor-history-mcp"]`. Elle n'exécute pas votre code local et conserve les limites de sa version publiée. Le premier lancement peut télécharger des dépendances. Lancé seul, le serveur attend un client MCP ; ce n'est pas une interface CLI interactive.
+Le premier lancement peut télécharger des dépendances npm. Lancé seul, le serveur attend un client MCP ; ce n'est pas une interface CLI interactive.
+
+<a id="run-from-source"></a>
+### Exécuter depuis les sources
+
+Pour développer ou tester avant la publication npm, compilez ce dépôt :
+
+```bash
+npm ci
+npm run build
+```
+
+Dans l'entrée du serveur, utilisez `"command": "node"` et `"args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]`, en adaptant le chemin. La configuration `npx` ci-dessus exécute le paquet npm, pas votre code local.
 
 ## Deux projets, un lecteur commun
 
@@ -70,7 +75,7 @@ Les agents peuvent utiliser les deux interfaces : appels directs au CLI ou à l'
 
 ## Stockages pris en charge
 
-Avec le lecteur `0.18.0` de ce code :
+Avec le lecteur `0.18.0` de MCP `0.3.0` :
 
 | Source | Fichiers | Lecture / recherche / export |
 |---|---|---|

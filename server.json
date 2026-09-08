@@ -6,12 +6,12 @@
     "url": "https://github.com/S2thend/cursor-history-mcp",
     "source": "github"
   },
-  "version": "0.2.4",
+  "version": "0.3.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "cursor-history-mcp",
-      "version": "0.2.4",
+      "version": "0.3.0",
       "transport": {
         "type": "stdio"
       }

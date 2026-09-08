@@ -23,39 +23,44 @@
 
 需要 Node.js **20.x 或 22.x–26.x**、已有可读取的本地 Cursor 历史，以及支持 stdio MCP 的客户端。服务进程必须能访问存放历史的机器。
 
-**发布边界：当前源码使用 `cursor-history@0.18.0`；npm 已发布的 `cursor-history-mcp@0.2.4` 仍使用旧版读取库。新 MCP 版本发布前，请使用下面的本地构建体验本文的新存储和 UUID 支持。**
+**版本范围：本文对应 `cursor-history-mcp@0.3.0`，读取库为 `cursor-history@0.18.0`。如果在 npm 发布前测试源码，请使用下方的[源码运行方式](#run-from-source)。**
 
-在本仓库执行：
-
-```bash
-npm ci
-npm run build
-```
-
-将以下服务条目合并进客户端配置，替换为实际绝对路径；不要覆盖已有服务：
+将以下 npm 服务条目合并进客户端配置，不要覆盖已有服务：
 
 ```json
 {
   "mcpServers": {
     "cursor-history": {
-      "command": "node",
-      "args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]
+      "command": "npx",
+      "args": ["-y", "cursor-history-mcp@0.3.0"]
     }
   }
 }
 ```
 
-客户端找不到 Node.js 时，也将 `command` 改成 Node 可执行文件的绝对路径。
+客户端找不到 `npx` 时，将 `command` 改成其可执行文件的绝对路径。
 
 - **Cursor**：项目级 `.cursor/mcp.json` 或全局 `~/.cursor/mcp.json`，添加上述条目并启用服务。参见 [Cursor MCP 文档](https://cursor.com/docs/mcp)。
 - **Claude Desktop**：Settings → Developer → Edit Config，合并配置后重启。macOS 路径为 `~/Library/Application Support/Claude/claude_desktop_config.json`，Windows 为 `%APPDATA%\Claude\claude_desktop_config.json`。参见 [本地服务器配置指南](https://modelcontextprotocol.io/docs/develop/connect-local-servers)。
 - **Claude Code**：执行下列命令；权限和配置范围见 [官方文档](https://code.claude.com/docs/en/mcp)。
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- node /absolute/path/to/cursor-history-mcp/dist/index.cjs
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
 ```
 
-如需运行 npm 已发布版，将配置改为 `"command": "npx"`、`"args": ["-y", "cursor-history-mcp"]`。它不会运行本地源码，能力以已发布版本为准；首次可能联网下载依赖。单独启动服务器是在等待 MCP 客户端，并不是交互式历史 CLI。
+首次运行可能联网下载 npm 依赖。单独启动服务器是在等待 MCP 客户端，并不是交互式历史 CLI。
+
+<a id="run-from-source"></a>
+### 从源码运行
+
+开发或在 npm 发布前测试时，在本仓库执行：
+
+```bash
+npm ci
+npm run build
+```
+
+将服务配置改成 `"command": "node"`、`"args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]`，替换为实际路径。上面的 `npx` 配置运行 npm 包，不会使用本地源码。
 
 ## 两个项目，一套读取能力
 
@@ -70,7 +75,7 @@ Agent 可以选择任一接口：直接调用 CLI/API，或通过 MCP 调用工�
 
 ## 存储支持与边界
 
-以下能力对应当前源码中的 `0.18.0` 读取库：
+以下能力对应 MCP `0.3.0` 中的 `0.18.0` 读取库：
 
 | 来源 | 本地文件 | 读取、搜索、导出 |
 |---|---|---|

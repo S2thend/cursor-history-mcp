@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - Upgrade the pinned `cursor-history` reader from 0.9.1 to 0.18.0, adding its Composer, Agent transcript, Store and ACP discovery/read support to MCP.
 - Add exact native session UUID selectors and explicit workspace scope to reads and exports; retain one-based MCP indices with scoped semantics.
@@ -12,7 +12,8 @@
 - Keep `cursor-history` external in the build so package-relative files and native SQLite drivers resolve correctly. Report the MCP package version at initialization and align Node.js engine requirements with the reader.
 - Add adapter regression tests and real stdio tests using synthetic Composer, Store, ACP and transcript databases. Tests build the server first.
 - Refresh English, Chinese, French and Spanish READMEs, add the MCP companion banner, and link the CLI/library project.
+- Publish npm packages through GitHub OIDC Trusted Publishing with Node.js 24 and npm >=11.5.1, alongside the existing MCP Registry OIDC flow.
 
 Backup/restore remain Composer-only. Store-only, merged-source and ambiguous session migration remain unsupported; broader coverage is tracked in the core project's roadmap.
 
-This is a source upgrade, not an npm publication. The already-published `cursor-history-mcp@0.2.4` still uses the older reader. Before publishing, choose a new MCP version, synchronize package metadata and `server.json`, rebuild and test, and update the README release boundary in all four languages.
+The MCP package version is 0.3.0; its reader remains pinned to the independently published `cursor-history@0.18.0`. See [Publishing](docs/publishing.md) for the OIDC setup and release checklist.

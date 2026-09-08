@@ -30,31 +30,24 @@ No embeddings, indexing service, or API key is required by this server. Your ass
 
 Requires Node.js **20.x or 22.x–26.x**, readable local Cursor history, and a client that supports local stdio MCP servers. The client must run the server on the machine where that history is available.
 
-**Release boundary:** this checkout uses `cursor-history@0.18.0`. The published `cursor-history-mcp@0.2.4` still uses the older reader. Until a new MCP release is published, use the local build below to get the storage support and selectors documented here. An npm badge does not describe unreleased code.
+**Version scope:** these docs describe `cursor-history-mcp@0.3.0`, powered by `cursor-history@0.18.0`. If you are testing a checkout before its npm publication, use [the source setup](#run-from-source) below.
 
-### Use the upgraded local build
+### Configure the npm package
 
-From this repository:
-
-```bash
-npm ci
-npm run build
-```
-
-Add the server entry to your client's MCP configuration, replacing the absolute path:
+Add this server entry to your client's MCP configuration:
 
 ```json
 {
   "mcpServers": {
     "cursor-history": {
-      "command": "node",
-      "args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]
+      "command": "npx",
+      "args": ["-y", "cursor-history-mcp@0.3.0"]
     }
   }
 }
 ```
 
-If the client cannot find Node.js, use the absolute path to the Node executable too. Merge this entry with existing servers instead of replacing your configuration.
+If the client cannot find `npx`, use the absolute path to its executable. Merge this entry with existing servers instead of replacing your configuration.
 
 ### Cursor
 
@@ -62,10 +55,10 @@ Use project-local `.cursor/mcp.json` or global `~/.cursor/mcp.json`. Add the ent
 
 ### Claude Code
 
-Register the local build for your user account:
+Register the versioned npm package for your user account:
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- node /absolute/path/to/cursor-history-mcp/dist/index.cjs
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
 ```
 
 See [Claude Code's MCP documentation](https://code.claude.com/docs/en/mcp) for scopes and permissions.
@@ -79,11 +72,18 @@ Open **Settings → Developer → Edit Config**, merge the JSON entry above, and
 
 See the [local MCP server setup guide](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
 
-### Published npm package
-
-To use the published release instead, set `command` to `npx` and `args` to `["-y", "cursor-history-mcp"]`. This does **not** use your local checkout. Check the release boundary above before expecting the new capabilities.
-
 The first run may download dependencies from npm. Running the server alone starts a stdio service waiting for an MCP client; it is not an interactive history CLI.
+
+### Run from source
+
+For development or testing before npm publication, build this repository:
+
+```bash
+npm ci
+npm run build
+```
+
+In the server entry, use `"command": "node"` and `"args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]`, replacing the path. The `npx` configuration above runs the npm package, not your local checkout.
 
 <a id="companion-project"></a>
 ## Two projects, one history reader
@@ -100,7 +100,7 @@ Agents can use either interface: direct CLI/API invocation or MCP tool calls.
 <a id="compatibility"></a>
 ## Works across storage generations
 
-With the `0.18.0` reader in this checkout:
+With the `0.18.0` reader in MCP `0.3.0`:
 
 | Source | Local files | Read / search / export |
 |---|---|---|
