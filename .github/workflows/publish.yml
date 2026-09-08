@@ -1,5 +1,9 @@
 name: Publish to npm and MCP Registry
 
+# npm Trusted Publisher: S2thend / cursor-history-mcp / publish.yml.
+# Leave the environment field empty and allow direct npm publish.
+# See docs/publishing.md for the one-time npm package settings.
+
 on:
   release:
     types: [published]
@@ -17,8 +21,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing requires npm >=11.5.1 and Node.js >=22.14.0.
+      - name: Install npm with trusted publishing support
+        run: |
+          npm install --global 'npm@^11.5.1'
+          npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -29,10 +39,10 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # npm exchanges the GitHub OIDC identity for short-lived credentials.
+      # Provenance is generated automatically; no npm token secret is needed.
+      - name: Publish to npm with OIDC
+        run: npm publish --access public
 
       # Publish to MCP Registry
       - name: Install mcp-publisher
