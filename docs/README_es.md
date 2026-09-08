@@ -23,7 +23,9 @@ Basado en [cursor-history](https://github.com/S2thend/cursor-history), este serv
 
 Requiere Node.js **20.x o 22.x–26.x**, historial local de Cursor legible y un cliente MCP compatible con stdio. El servidor debe poder acceder a la máquina que contiene el historial.
 
-**Versión documentada: `cursor-history-mcp@0.3.0`, con el lector `cursor-history@0.18.0`. Para probar el código antes de su publicación en npm, utiliza la [configuración desde el código fuente](#run-from-source) de abajo.**
+**Versión documentada: `cursor-history-mcp@0.3.1`, con el lector `cursor-history@0.18.0`. Para probar el código antes de su publicación en npm, utiliza la [configuración desde el código fuente](#run-from-source) de abajo.**
+
+**Compatibilidad del cliente:** el servidor utiliza MCP SDK 1.30.0. Los clientes SDK v2 pueden conectarse con el protocolo anterior predeterminado o mediante negociación automática; los clientes limitados al protocolo `2026-07-28` no pueden hacerlo. Consulta las [pruebas de compatibilidad SDK](sdk-compatibility.md).
 
 Combina esta entrada npm con la configuración de tu cliente:
 
@@ -32,7 +34,7 @@ Combina esta entrada npm con la configuración de tu cliente:
   "mcpServers": {
     "cursor-history": {
       "command": "npx",
-      "args": ["-y", "cursor-history-mcp@0.3.0"]
+      "args": ["-y", "cursor-history-mcp@0.3.1"]
     }
   }
 }
@@ -45,7 +47,7 @@ Si el cliente no encuentra `npx`, utiliza la ruta absoluta de ese ejecutable. No
 - **Claude Code**: ejecuta lo siguiente; consulta [ámbitos y permisos](https://code.claude.com/docs/en/mcp).
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.1
 ```
 
 El primer inicio puede descargar dependencias npm. El servidor por sí solo espera un cliente MCP; no es una CLI interactiva de historial.
@@ -75,7 +77,7 @@ Los agentes pueden usar cualquiera de las dos interfaces: invocar la CLI/API dir
 
 ## Almacenamientos compatibles
 
-Con el lector `0.18.0` de MCP `0.3.0`:
+Con el lector `0.18.0` de MCP `0.3.1`:
 
 | Fuente | Archivos | Lectura / búsqueda / exportación |
 |---|---|---|

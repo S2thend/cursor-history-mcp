@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1
+
+- Refresh development dependencies to patched releases: Vitest 4.1.11, tsup 8.5.1, Node 22 type definitions 22.20.1 and compatible transitive security updates. Existing application and test code is unchanged by this toolchain refresh. See [Development toolchain](docs/development.md) for setup and override maintenance.
+- Override only tsup's esbuild dependency to 0.28.1 to address GHSA-g7r4-m6w7-qqqr, since tsup 8.5.1 still requests the affected 0.27.x line. Remove the override once tsup's declared range includes a patched release. Build, watch rebuild and stdio interoperability are regression-tested; runtime dependency pins and Node.js support are unchanged.
+- Upgrade the MCP SDK from 1.0.0 to 1.30.0 and Zod from 3.24.1 to 3.25.76; keep the history reader pinned to 0.18.0.
+- Add stdio interoperability coverage using the v2.0.0 client in default and automatic protocol-negotiation modes, alongside the v1 client. The v2 client is a development-only test dependency, not the server runtime.
+- Document that SDK major versions do not need to match: v2 clients can use the legacy protocol, while clients restricted to the 2026-07-28 protocol require a v2 server migration.
+
 ## 0.3.0
 
 - Upgrade the pinned `cursor-history` reader from 0.9.1 to 0.18.0, adding its Composer, Agent transcript, Store and ACP discovery/read support to MCP.

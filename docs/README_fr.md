@@ -23,7 +23,9 @@ Basé sur [cursor-history](https://github.com/S2thend/cursor-history), ce serveu
 
 Prérequis : Node.js **20.x ou 22.x–26.x**, un historique Cursor local lisible et un client MCP compatible stdio. Le serveur doit avoir accès à la machine contenant cet historique.
 
-**Version documentée : `cursor-history-mcp@0.3.0`, avec le lecteur `cursor-history@0.18.0`. Pour tester le code avant sa publication npm, utilisez la [configuration depuis les sources](#run-from-source) ci-dessous.**
+**Version documentée : `cursor-history-mcp@0.3.1`, avec le lecteur `cursor-history@0.18.0`. Pour tester le code avant sa publication npm, utilisez la [configuration depuis les sources](#run-from-source) ci-dessous.**
+
+**Compatibilité client :** le serveur utilise MCP SDK 1.30.0. Les clients SDK v2 peuvent se connecter avec le protocole historique par défaut ou le repli automatique ; un client limité au protocole `2026-07-28` ne le peut pas. Voir les [tests de compatibilité SDK](sdk-compatibility.md).
 
 Fusionnez cette entrée npm avec la configuration de votre client :
 
@@ -32,7 +34,7 @@ Fusionnez cette entrée npm avec la configuration de votre client :
   "mcpServers": {
     "cursor-history": {
       "command": "npx",
-      "args": ["-y", "cursor-history-mcp@0.3.0"]
+      "args": ["-y", "cursor-history-mcp@0.3.1"]
     }
   }
 }
@@ -45,7 +47,7 @@ Si le client ne trouve pas `npx`, indiquez le chemin absolu de cet exécutable. 
 - **Claude Code** : commande ci-dessous. Consultez les [portées et permissions](https://code.claude.com/docs/en/mcp).
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.1
 ```
 
 Le premier lancement peut télécharger des dépendances npm. Lancé seul, le serveur attend un client MCP ; ce n'est pas une interface CLI interactive.
@@ -75,7 +77,7 @@ Les agents peuvent utiliser les deux interfaces : appels directs au CLI ou à l'
 
 ## Stockages pris en charge
 
-Avec le lecteur `0.18.0` de MCP `0.3.0` :
+Avec le lecteur `0.18.0` de MCP `0.3.1` :
 
 | Source | Fichiers | Lecture / recherche / export |
 |---|---|---|

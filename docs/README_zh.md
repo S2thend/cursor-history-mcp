@@ -23,7 +23,9 @@
 
 需要 Node.js **20.x 或 22.x–26.x**、已有可读取的本地 Cursor 历史，以及支持 stdio MCP 的客户端。服务进程必须能访问存放历史的机器。
 
-**版本范围：本文对应 `cursor-history-mcp@0.3.0`，读取库为 `cursor-history@0.18.0`。如果在 npm 发布前测试源码，请使用下方的[源码运行方式](#run-from-source)。**
+**版本范围：本文对应 `cursor-history-mcp@0.3.1`，读取库为 `cursor-history@0.18.0`。如果在 npm 发布前测试源码，请使用下方的[源码运行方式](#run-from-source)。**
+
+**客户端兼容性：**服务端使用 MCP SDK 1.30.0。SDK v2 客户端可以通过默认的旧协议或自动回退连接；如果客户端仅允许 `2026-07-28` 新协议，则无法连接。测试范围见 [SDK 兼容说明](sdk-compatibility.md)。
 
 将以下 npm 服务条目合并进客户端配置，不要覆盖已有服务：
 
@@ -32,7 +34,7 @@
   "mcpServers": {
     "cursor-history": {
       "command": "npx",
-      "args": ["-y", "cursor-history-mcp@0.3.0"]
+      "args": ["-y", "cursor-history-mcp@0.3.1"]
     }
   }
 }
@@ -45,7 +47,7 @@
 - **Claude Code**：执行下列命令；权限和配置范围见 [官方文档](https://code.claude.com/docs/en/mcp)。
 
 ```bash
-claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.0
+claude mcp add --transport stdio --scope user cursor-history -- npx -y cursor-history-mcp@0.3.1
 ```
 
 首次运行可能联网下载 npm 依赖。单独启动服务器是在等待 MCP 客户端，并不是交互式历史 CLI。
@@ -75,7 +77,7 @@ Agent 可以选择任一接口：直接调用 CLI/API，或通过 MCP 调用工�
 
 ## 存储支持与边界
 
-以下能力对应 MCP `0.3.0` 中的 `0.18.0` 读取库：
+以下能力对应 MCP `0.3.1` 中的 `0.18.0` 读取库：
 
 | 来源 | 本地文件 | 读取、搜索、导出 |
 |---|---|---|
