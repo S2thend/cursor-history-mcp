@@ -5,11 +5,13 @@
 import { searchSessions } from "cursor-history";
 import { z } from "zod";
 import { mapCursorHistoryError, isMcpError } from "../errors.js";
+import { readScopeShape, readScopeProperties, readConfig, sourceSummary } from "./history-context.js";
 
 /**
  * Input schema for the search tool
  */
 const SearchInputSchema = z.object({
+  ...readScopeShape,
   query: z.string().min(1),
   limit: z.number().int().min(1).max(100).default(10).optional(),
   context: z.number().int().min(0).max(500).default(50).optional(),
@@ -25,6 +27,7 @@ export const searchTool = {
   inputSchema: {
     type: "object" as const,
     properties: {
+      ...readScopeProperties,
       query: {
         type: "string",
         description: "The search query (keyword or phrase to find)",
@@ -40,7 +43,7 @@ export const searchTool = {
       context: {
         type: "integer",
         description:
-          "Number of characters of context to show around each match (default: 50)",
+          "Number of source lines of context requested around each match (default: 50)",
         minimum: 0,
         maximum: 500,
         default: 50,
@@ -61,6 +64,7 @@ export async function handleSearch(
     const parsed = SearchInputSchema.parse(args);
 
     const results = await searchSessions(parsed.query, {
+      ...readConfig(parsed),
       limit: parsed.limit,
       context: parsed.context,
     });
@@ -82,7 +86,12 @@ export async function handleSearch(
 
       lines.push(
         `Session (${workspaceName}):`,
+        `  ID: ${result.session.id}`,
+        `  ${sourceSummary(result.session)}`,
+        `  Message index: ${result.messageIndex} · UTF-16 offset: ${result.offset}`,
+        ...(result.contextBefore ?? []).map(line => `    ${line}`),
         `  "${result.match}"`,
+        ...(result.contextAfter ?? []).map(line => `    ${line}`),
         ""
       );
     }

@@ -35,6 +35,27 @@ describe("year-pack integration", () => {
   // ============================================================================
 
   describe("T030: full year-pack generation", () => {
+    it("reuses hydrated v0.18 list rows, including partial rows, without rereading", async () => {
+      const timestamp = new Date(2025, 5, 1).toISOString();
+      mockListSessions.mockResolvedValue({
+        data: [
+          { id: "ready", workspace: "/projects/app", timestamp, messageCount: 1,
+            messages: [{ role: "user", content: "How do I configure TypeScript in this project?", timestamp }] },
+          { id: "partial", workspace: "/projects/app", timestamp, messageCount: 0,
+            messages: [], resolutionState: "partial" },
+        ],
+        pagination: { hasMore: false, total: 2, offset: 0, limit: 100 },
+      });
+      const handleYearPack = await getHandleYearPack();
+      const result = await handleYearPack({ year: 2025, workspace: "/projects/app", maxSamples: 0 });
+      expect(result).toContain("**Sessions Analyzed**: 2");
+      expect(result).toContain("# Year Pack Generated Successfully");
+      expect(mockGetSession).not.toHaveBeenCalled();
+      const json = JSON.parse(result.match(/```json\n([\s\S]*?)\n```/)[1]);
+      expect(json.samples.questions).toEqual([]);
+      expect(mockListSessions).toHaveBeenCalledWith(expect.objectContaining({ workspace: "/projects/app" }));
+    });
+
     it("should generate valid year-pack for a year with sessions", async () => {
       const year = 2025;
       const now = new Date(year, 6, 15); // July 15, 2025
@@ -212,6 +233,7 @@ describe("year-pack integration", () => {
       expect(mockListSessions).toHaveBeenCalledWith(
         expect.objectContaining({ workspace })
       );
+      expect(mockGetSession).toHaveBeenCalledWith("session-1", { workspace });
 
       // Verify output includes workspace info
       expect(result).toContain("# Year Pack Generated Successfully");

@@ -11,6 +11,7 @@ import {
   isBackupError,
   isRestoreError,
   isInvalidBackupError,
+  isSessionIntegrityError,
 } from "cursor-history";
 import { MCP_ERROR_CODES, McpErrorCode } from "./types.js";
 
@@ -27,6 +28,7 @@ export interface McpError {
  * Error messages for each error code
  */
 const ERROR_MESSAGES: Record<McpErrorCode, string> = {
+  [MCP_ERROR_CODES.INTEGRITY_FAILED]: "History integrity check failed.",
   [MCP_ERROR_CODES.DATABASE_NOT_FOUND]:
     "Cursor data not found. Please ensure Cursor IDE is installed and has been used at least once.",
   [MCP_ERROR_CODES.DATABASE_LOCKED]:
@@ -47,6 +49,15 @@ const ERROR_MESSAGES: Record<McpErrorCode, string> = {
  * Maps a cursor-history error to an MCP error response
  */
 export function mapCursorHistoryError(error: unknown): McpError {
+  // Preserve actionable v0.18 failures before broad backup/restore guards
+  // discard their scope, capability or publication recovery details.
+  if (isSessionIntegrityError(error)) {
+    return {
+      code: MCP_ERROR_CODES.INTEGRITY_FAILED,
+      message: `${error.code}: ${error.message}\n${JSON.stringify(error.details)}`,
+    };
+  }
+
   if (isDatabaseNotFoundError(error)) {
     return {
       code: MCP_ERROR_CODES.DATABASE_NOT_FOUND,

@@ -5,6 +5,7 @@
 import { listSessions } from "cursor-history";
 import { z } from "zod";
 import { mapCursorHistoryError, isMcpError } from "../errors.js";
+import { readScopeShape, readScopeProperties, readConfig, sourceSummary, formatTimestamp } from "./history-context.js";
 
 /**
  * Input schema for the list tool
@@ -12,7 +13,7 @@ import { mapCursorHistoryError, isMcpError } from "../errors.js";
 const ListInputSchema = z.object({
   limit: z.number().int().min(1).max(1000).default(20).optional(),
   offset: z.number().int().min(0).default(0).optional(),
-  workspace: z.string().optional(),
+  ...readScopeShape,
 });
 
 /**
@@ -38,11 +39,7 @@ export const listSessionsTool = {
         minimum: 0,
         default: 0,
       },
-      workspace: {
-        type: "string",
-        description:
-          "Filter sessions by workspace path (absolute path to project folder)",
-      },
+      ...readScopeProperties,
     },
     additionalProperties: false,
   },
@@ -60,7 +57,7 @@ export async function handleListSessions(
     const result = await listSessions({
       limit: parsed.limit,
       offset: parsed.offset,
-      workspace: parsed.workspace,
+      ...readConfig(parsed),
     });
 
     // Format the result for display
@@ -84,7 +81,7 @@ export async function handleListSessions(
       const workspaceName = session.workspace
         ? session.workspace.split("/").pop() ?? session.workspace
         : "No workspace";
-      const date = new Date(session.timestamp).toLocaleString();
+      const date = formatTimestamp(session.timestamp, session.createdAtSource);
 
       // Get first message preview
       const firstMessage = session.messages[0];
@@ -92,9 +89,13 @@ export async function handleListSessions(
         ? `"${firstMessage.content.slice(0, 50)}..."`
         : "(no messages)";
 
-      const sessionIndex = pagination.offset + i + 1;
+      const sessionIndex = (session.index ?? pagination.offset + i) + 1;
       lines.push(
         `#${sessionIndex} - ${workspaceName} (${date})`,
+        `    ID: ${session.id}`,
+        `    Workspace: ${session.canonicalWorkspacePath ?? session.workspace}`,
+        `    Index scope: ${session.indexScope ?? (parsed.workspace ? "workspace" : "global")}${parsed.workspace ? ` (${parsed.workspace})` : ""}`,
+        `    ${sourceSummary(session)}`,
         `    ${session.messageCount} messages · ${preview}`,
         ""
       );

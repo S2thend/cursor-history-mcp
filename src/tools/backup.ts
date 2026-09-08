@@ -1,5 +1,5 @@
 /**
- * cursor_history_backup tool - Create backup of all chat history
+ * cursor_history_backup tool - Create a backup of Composer history
  */
 
 import { createBackup } from "cursor-history";
@@ -20,7 +20,7 @@ const BackupInputSchema = z.object({
 export const backupTool = {
   name: "cursor_history_backup",
   description:
-    "Create a backup of all Cursor AI chat history. Saves a portable archive that can be restored later.",
+    "Back up Composer chat history to a restorable ZIP archive. Store databases, Agent transcripts and ACP stores are not included.",
   inputSchema: {
     type: "object" as const,
     properties: {

@@ -125,6 +125,7 @@ export const MCP_ERROR_CODES = {
   BACKUP_FAILED: -32005,
   RESTORE_FAILED: -32006,
   INVALID_BACKUP: -32007,
+  INTEGRITY_FAILED: -32008,
 } as const;
 
 export type McpErrorCode = (typeof MCP_ERROR_CODES)[keyof typeof MCP_ERROR_CODES];

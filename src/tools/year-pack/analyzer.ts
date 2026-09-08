@@ -255,6 +255,8 @@ export function selectSafeSamples(
   maxSamples: number = DEFAULT_CONFIG.maxSamples,
   maxLength: number = DEFAULT_CONFIG.maxSampleLength
 ): YearPackSamples {
+  if (maxSamples <= 0) return { questions: [], maxLength };
+
   // Filter and prepare candidates
   const candidates = questions
     .filter((q) => {

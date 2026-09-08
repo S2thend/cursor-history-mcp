@@ -114,16 +114,17 @@ async function fetchSessionsForYear(
     const result = await listSessions({ limit, offset, workspace });
     const batch = result.data;
 
-    for (let i = 0; i < batch.length; i++) {
-      const session = batch[i];
+    for (const session of batch) {
       if (!session) continue;
 
       // Check if session is within the year
       const sessionDate = new Date(session.timestamp);
       if (sessionDate >= yearStart && sessionDate < yearEnd) {
-        // Fetch full session content using 0-based index
-        const sessionIndex = offset + i;
-        const fullSession = await getSession(sessionIndex);
+        // v0.18 listSessions already hydrates messages. Avoid rescanning the
+        // entire catalog once per session; resolve only genuinely sparse rows.
+        const fullSession = Array.isArray(session.messages)
+          ? session
+          : await getSession(session.id, { workspace });
         sessions.push(fullSession as unknown as SessionData);
       }
     }

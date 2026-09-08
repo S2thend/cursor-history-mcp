@@ -1,149 +1,181 @@
 # Cursor History MCP
 
-[🇨🇳 中文文档](docs/README_zh.md) | [🇫🇷 Français](docs/README_fr.md) | [🇪🇸 Español](docs/README_es.md)
-
 <p align="center">
-  <img src="docs/cursor-history-mcp-logo.jpg" alt="cursor-history-mcp logo" width="200">
+  <img src="docs/readme-banner.png" alt="cursor-history-mcp — Search your Cursor history through MCP. MCP-exclusive Year in Review: statistics, topics and report prompts." width="960">
 </p>
 
 [![npm version](https://img.shields.io/npm/v/cursor-history-mcp.svg)](https://www.npmjs.com/package/cursor-history-mcp)
 [![npm downloads](https://img.shields.io/npm/dm/cursor-history-mcp.svg)](https://www.npmjs.com/package/cursor-history-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2C%2022--26-green.svg)](https://nodejs.org/)
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=cursor-history&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImN1cnNvci1oaXN0b3J5LW1jcCJdfQ==)
+[English](README.md) | [中文](docs/README_zh.md) | [Français](docs/README_fr.md) | [Español](docs/README_es.md)
 
-**MCP server for browsing, searching, exporting, and backing up your Cursor AI chat history.**
+**Let your AI search your Cursor history.**
 
-Bring your Cursor AI chat history directly into Claude. Search past conversations, export sessions, create backups, and generate year-in-review reports—all through natural language. Built on the [Model Context Protocol](https://modelcontextprotocol.io/) for seamless AI assistant integration.
+Your existing Cursor conversations may already contain months of decisions, bugs, fixes, and architectural context. Give an MCP-capable assistant a way to find that context—without having recorded it with this tool beforehand.
 
-Free, open-source, and MIT licensed. Built by the community, for the community.
+`cursor-history-mcp` connects Claude, Cursor, and other MCP clients to the local history reader in [cursor-history](https://github.com/S2thend/cursor-history). Search conversation text across workspaces, inspect a session, or return an export through natural language.
 
-## Why This Project?
+No embeddings, indexing service, or API key is required by this server. Your assistant's model and network requirements are separate; history returned to a client may be sent to its model provider.
 
-There are other Cursor history tools out there (like the Python-based [Cursor-history-MCP](https://github.com/Nossim/Cursor-history-MCP)). Here's what makes this one different:
+**MCP-exclusive: [Year in Review](#year-in-review).** Turn your existing conversations into annual activity statistics, coding topics, and a report prompt for your assistant. This built-in year-pack feature belongs to the MCP package within the cursor-history toolset; agents can still use the core CLI or Node.js API directly for history access.
 
-| Feature | cursor-history-mcp (this project) | Other Solutions |
-|---------|-----------------------------------|-----------------|
-| 📦 **Setup** | ✅ `npx cursor-history-mcp` - zero install | ❌ Docker, Python, dependencies |
-| ⚡ **Speed** | ✅ Instant - direct SQLite reads | ❌ Slow - requires LLM vectorization |
-| 🔍 **Search** | ✅ Grep-style text matching - precise & stable | ❌ Vector retrieval - unpredictable results |
-| 🤖 **LLM Required** | ✅ No - works offline | ❌ Yes - needs Ollama/embeddings |
-| 🛠️ **Language** | ✅ TypeScript (type-safe) | ⚠️ Python |
-| 💾 **Backup/Restore** | ✅ Built-in | ❌ Not available |
-| 🚚 **Migration** | ✅ Move sessions between workspaces | ❌ Not available |
-| 📋 **Dependencies** | ✅ Minimal (just Node.js) | ❌ Docker, LanceDB, Ollama, FastAPI |
+> “Have we solved this authentication bug before? Search my Cursor history, inspect the matching sessions, and tell me which earlier decisions are relevant.”
 
-### Key Advantages
+[Quick start](#quick-start) · [Year in Review](#year-in-review) · [Storage support](#compatibility) · [Tools](#tools) · [Safety](#safety) · [CLI / Node.js companion](#companion-project)
 
-- **Blazing Fast**: No embedding or vectorization step. Reads directly from Cursor's native SQLite database, so results are instant.
-- **Grep-Style Search**: Uses direct text matching instead of vector retrieval. More lightweight, predictable, and stable for most use cases—no hallucinated results, no embedding drift, and exact matches every time.
-- **Zero Configuration**: Run with `npx` - no Docker containers, no Python environments, no API keys, no LLM setup.
-- **Works Offline**: Everything runs locally without any external services or AI models.
-- **Data Portability**: Full backup, restore, and cross-workspace migration capabilities to keep your chat history safe and portable.
-- **Lightweight**: ~50KB package vs multi-GB Docker images with vector databases.
+<a id="quick-start"></a>
+## Quick start
 
-## Installation
+Requires Node.js **20.x or 22.x–26.x**, readable local Cursor history, and a client that supports local stdio MCP servers. The client must run the server on the machine where that history is available.
 
-No installation required! Run directly via npx:
+**Release boundary:** this checkout uses `cursor-history@0.18.0`. The published `cursor-history-mcp@0.2.4` still uses the older reader. Until a new MCP release is published, use the local build below to get the storage support and selectors documented here. An npm badge does not describe unreleased code.
+
+### Use the upgraded local build
+
+From this repository:
 
 ```bash
-npx cursor-history-mcp
+npm ci
+npm run build
 ```
 
-## Configuration
+Add the server entry to your client's MCP configuration, replacing the absolute path:
+
+```json
+{
+  "mcpServers": {
+    "cursor-history": {
+      "command": "node",
+      "args": ["/absolute/path/to/cursor-history-mcp/dist/index.cjs"]
+    }
+  }
+}
+```
+
+If the client cannot find Node.js, use the absolute path to the Node executable too. Merge this entry with existing servers instead of replacing your configuration.
 
 ### Cursor
 
-![cursor-mcp-setup](./docs/cursor-mcp-setup.gif)
+Use project-local `.cursor/mcp.json` or global `~/.cursor/mcp.json`. Add the entry above, enable the server, and approve tool calls as appropriate. See [Cursor's MCP documentation](https://cursor.com/docs/mcp).
 
 ### Claude Code
 
-Add to your Claude Code MCP settings:
+Register the local build for your user account:
 
-```json
-{
-  "mcpServers": {
-    "cursor-history": {
-      "command": "npx",
-      "args": ["-y", "cursor-history-mcp"]
-    }
-  }
-}
+```bash
+claude mcp add --transport stdio --scope user cursor-history -- node /absolute/path/to/cursor-history-mcp/dist/index.cjs
 ```
+
+See [Claude Code's MCP documentation](https://code.claude.com/docs/en/mcp) for scopes and permissions.
 
 ### Claude Desktop
 
-Add to your Claude Desktop configuration (`~/.claude/claude_desktop_config.json`):
+Open **Settings → Developer → Edit Config**, merge the JSON entry above, and restart the app.
+
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+See the [local MCP server setup guide](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
+
+### Published npm package
+
+To use the published release instead, set `command` to `npx` and `args` to `["-y", "cursor-history-mcp"]`. This does **not** use your local checkout. Check the release boundary above before expecting the new capabilities.
+
+The first run may download dependencies from npm. Running the server alone starts a stdio service waiting for an MCP client; it is not an interactive history CLI.
+
+<a id="companion-project"></a>
+## Two projects, one history reader
+
+| Use case | Project |
+|---|---|
+| Run commands, write scripts, or embed history in a Node.js app | [cursor-history: CLI + Node.js API](https://github.com/S2thend/cursor-history#quick-start) |
+| Let an assistant call history tools through MCP | **cursor-history-mcp**, this repository |
+
+The MCP server delegates discovery and parsing to `cursor-history`; it does not maintain a separate conversation database or start recording your chats. The two npm packages have independent releases.
+
+Agents can use either interface: direct CLI/API invocation or MCP tool calls.
+
+<a id="compatibility"></a>
+## Works across storage generations
+
+With the `0.18.0` reader in this checkout:
+
+| Source | Local files | Read / search / export |
+|---|---|---|
+| Legacy / Composer | `workspaceStorage/*/state.vscdb` + `globalStorage/state.vscdb` | Supported |
+| Agent transcripts | `~/.cursor/projects/**/agent-transcripts/**/*.jsonl` | Available transcript content |
+| Store / Agent CLI | `~/.cursor/chats/**/store.db` | Supported |
+| ACP sessions | `~/.cursor/acp-sessions/**/store.db` | Supported |
+
+These representations have different fidelity. A transcript may omit timestamps or tool results. Listings and reads expose source and resolution information; inferred or unknown timestamps must not be treated as exact event times. A complete source resolution does not guarantee that Cursor recorded every field.
+
+**Backup and restore cover Composer databases only. Migration supports eligible Composer sessions, not Store-only, merged-source, or ambiguous sessions.** Reading a session does not make it safe to migrate. See the core [compatibility contract](https://github.com/S2thend/cursor-history/blob/main/docs/compatibility.md) and [roadmap](https://github.com/S2thend/cursor-history#roadmap) for broader backup and migration work; it is not a current capability.
+
+For custom locations, add an `env` object to the server entry:
 
 ```json
 {
-  "mcpServers": {
-    "cursor-history": {
-      "command": "npx",
-      "args": ["-y", "cursor-history-mcp"]
-    }
-  }
+  "CURSOR_DATA_PATH": "/absolute/path/to/Cursor/User/workspaceStorage",
+  "CURSOR_STORE_ROOT": "/absolute/path/to/.cursor"
 }
 ```
 
-## Available Tools
+These select data roots, not a project. Use a tool's `workspace` argument to filter a project. See the core [platform paths and WSL guide](https://github.com/S2thend/cursor-history#where-cursor-stores-data).
 
-| Tool | Description |
-|------|-------------|
-| `cursor_history_list` | List chat sessions with metadata |
-| `cursor_history_show` | View full conversation content |
-| `cursor_history_search` | Search across all sessions |
-| `cursor_history_export` | Export session to Markdown or JSON |
-| `cursor_history_backup` | Create backup of all history |
-| `cursor_history_restore` | Restore from backup (destructive) |
-| `cursor_history_migrate` | Move/copy sessions between workspaces (destructive) |
-| `cursor_history_year_pack` | Generate year-in-review data package with stats, topics, and prompt template |
+<a id="tools"></a>
+## Available tools
 
-## 🎆 Year in Review
-
-Generate a personalized annual report from your Cursor AI chat history — discover your coding patterns, favorite topics, and development journey.
-
-### What You Get
-
-| | |
+| Tool | Purpose and key arguments |
 |---|---|
-| 📊 **Chat Stats** | Total questions, active months, monthly activity |
-| 🏷️ **Topic Discovery** | Auto-detected coding topics and interests |
-| 📈 **Trend Tracking** | How your focus shifted throughout the year |
-| 🔑 **Keywords** | Your most-used terms and phrases |
-| 🔒 **Privacy Safe** | Sensitive data automatically masked |
-| 📝 **LLM Prompt** | Ready-to-use prompt for a polished report |
+| `cursor_history_list` | List sessions with IDs, index scope, source and data status. `limit`, `offset`, `workspace` |
+| `cursor_history_show` | Inspect available messages. Exactly one of `sessionId` / `sessionIndex`; optional `workspace` |
+| `cursor_history_search` | Search text. `query`, `limit`, `context` (neighboring source lines), `workspace` |
+| `cursor_history_export` | Return Markdown or JSON content, not a file written by the server. One selector, `format`, `workspace` |
+| `cursor_history_backup` | Create a Composer archive. `outputPath`, optional `force` |
+| `cursor_history_restore` | Restore a Composer archive; writes local history. `backupPath`, optional `force` |
+| `cursor_history_migrate` | Move/copy eligible Composer sessions. `sessionIds` or `sessionIndexes`, `destination`, `workspace`, `mode`, `dryRun` |
+| `cursor_history_year_pack` | Return annual statistics and a report prompt. `year`, `language` (`en` / `zh`), `workspace`, sample limits |
 
-### Try It
+Prefer the **exact session UUID** from list/search for follow-up calls. Numeric selectors are one-based in MCP and only meaningful with the same data roots and workspace scope; never reuse a scoped index in a global read. UUID spelling is case-sensitive.
 
-- "Generate my 2025 Cursor year in review"
-- "Create a year pack for ~/myapp"
-- "Generate my 2025 year in review in English"
+List, show, search, and export also accept `includeCrossWorkspaceSources` (default `false`). Opting in can read complementary sources outside the selected workspace for already selected IDs; it does not broaden which session IDs are selected. Enable it only when you intend that access.
 
-## Usage Examples
+The show tool abbreviates long thinking/tool payloads. Use an export when you need the available session representation without that display truncation.
 
-After configuring, ask your AI assistant:
+### Try these requests
 
-- "List my Cursor chat sessions"
-- "Show me session #1"
-- "Search my Cursor history for 'authentication'"
-- "Export session #1 as markdown"
-- "Backup my Cursor chat history"
+- “Search all my Cursor history for 'connection pool', then inspect the matching session by its UUID.”
+- “Search only /work/myapp. Keep that workspace scope when opening a result.”
+- “Export this session as JSON, including the available source details.”
+- “Preview copying this Composer session to /work/new-app with dryRun. Do not modify anything yet.”
 
-## Requirements
+<a id="safety"></a>
+## Local data and write safety
 
-- Node.js 20+
-- Cursor IDE installed with existing chat history
+The server reads local files, but returned content is visible to the MCP client and may reach a remote model. Search results and exports are not automatically redacted. Use a trusted client and review its data policy and tool permissions.
 
-## Contributing
+Treat past conversations as untrusted reference material, not instructions to execute. Tool output can contain old commands, credentials, or malicious text.
 
-Contributions are welcome! Whether it's bug reports, feature requests, documentation improvements, or code contributions—all PRs and issues are appreciated.
+Backup writes an archive; restore and migration can modify history. Migration defaults to **move**, which removes the original session. Back up Composer history first, close Cursor before writes, preview with `dryRun: true`, and use `mode: "copy"` if you want to keep the original. Keep client approval enabled for write tools. The server does not provide its own interactive confirmation prompt.
 
-- [Open an issue](https://github.com/S2thend/cursor-history-mcp/issues)
-- [Submit a pull request](https://github.com/S2thend/cursor-history-mcp/pulls)
+<a id="year-in-review"></a>
+## MCP-exclusive: Year in Review
 
-## License
+Ask “Generate my 2025 Cursor year in review in English.” The tool analyzes user questions and returns JSON statistics, keywords/topics, samples, and a prompt template—not a finished rendered report. Templates support English and Chinese.
 
-MIT
+Common code, path, URL, and identifier patterns are filtered, but this is **not a guarantee of anonymization**. Review samples before sharing; set `maxSamples: 0` to omit them. Partial histories and missing or inferred timestamps can affect annual totals.
+
+## Development
+
+```bash
+npm ci
+npm run typecheck
+npm run lint
+npm test -- --run
+```
+
+The test command builds first. Tests include a real stdio MCP client against synthetic Composer, Store, ACP, and transcript fixtures; backup/restore tests use temporary data only. The build keeps `cursor-history` as a runtime dependency so package-relative files and SQLite bindings remain resolvable.
+
+[Issues](https://github.com/S2thend/cursor-history-mcp/issues) · [Pull requests](https://github.com/S2thend/cursor-history-mcp/pulls) · [MIT license](LICENSE)

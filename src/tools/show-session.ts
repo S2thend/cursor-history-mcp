@@ -5,13 +5,12 @@
 import { getSession } from "cursor-history";
 import { z } from "zod";
 import { mapCursorHistoryError, isMcpError } from "../errors.js";
+import { sessionSelectorShape, hasOneSelector, sessionSelectorProperties, sessionSelectorAlternatives, readSelector, readConfig, sourceSummary, formatTimestamp } from "./history-context.js";
 
 /**
  * Input schema for the show tool
  */
-const ShowInputSchema = z.object({
-  sessionIndex: z.number().int().min(1),
-});
+const ShowInputSchema = z.object(sessionSelectorShape).refine(hasOneSelector, "Provide exactly one of sessionIndex or sessionId");
 
 /**
  * Tool definition for MCP
@@ -19,17 +18,11 @@ const ShowInputSchema = z.object({
 export const showSessionTool = {
   name: "cursor_history_show",
   description:
-    "Show the full content of a specific Cursor AI chat session including all messages, tool calls, and AI responses.",
+    "Inspect the available messages and tool activity in a Cursor session, with source and timestamp provenance. Long thinking and tool payloads are abbreviated; use export for unabridged available content.",
   inputSchema: {
     type: "object" as const,
-    properties: {
-      sessionIndex: {
-        type: "integer",
-        description: "The session index (1-based, as shown in list output)",
-        minimum: 1,
-      },
-    },
-    required: ["sessionIndex"],
+    properties: sessionSelectorProperties,
+    oneOf: sessionSelectorAlternatives,
     additionalProperties: false,
   },
 };
@@ -44,16 +37,18 @@ export async function handleShowSession(
     const parsed = ShowInputSchema.parse(args);
 
     // cursor-history uses 0-based indexing internally
-    const session = await getSession(parsed.sessionIndex - 1);
+    const session = await getSession(readSelector(parsed), readConfig(parsed));
 
     // Extract workspace name from path
     const workspaceName = session.workspace
       ? session.workspace.split("/").pop() ?? session.workspace
       : "No workspace";
-    const date = new Date(session.timestamp).toLocaleString();
+    const date = formatTimestamp(session.timestamp, session.createdAtSource);
 
     const lines: string[] = [
-      `Session #${parsed.sessionIndex} · ${workspaceName}`,
+      `Session ${parsed.sessionIndex === undefined ? session.id : `#${parsed.sessionIndex}`} · ${workspaceName}`,
+      `ID: ${session.id}`,
+      sourceSummary(session),
       `${session.messageCount} messages · Created ${date}`,
       "",
       "─".repeat(40),
@@ -61,7 +56,7 @@ export async function handleShowSession(
     ];
 
     for (const message of session.messages) {
-      const timestamp = new Date(message.timestamp).toLocaleTimeString();
+      const timestamp = formatTimestamp(message.timestamp, message.timestampSource);
       const roleLabel = message.role === "user" ? "You" : "Assistant";
 
       lines.push(`${roleLabel}: ${timestamp}`, "");

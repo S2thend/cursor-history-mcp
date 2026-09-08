@@ -18,6 +18,7 @@
     "start": "node dist/index.cjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
+    "pretest": "npm run build",
     "test": "vitest"
   },
   "keywords": [
@@ -31,11 +32,11 @@
   "author": "Borui Cai",
   "license": "MIT",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x || 22.x || 23.x || 24.x || 25.x || 26.x"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.0",
-    "cursor-history": "0.9.1",
+    "cursor-history": "0.18.0",
     "zod": "3.24.1"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "vitest": "2.1.8"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs"
   ]
 }

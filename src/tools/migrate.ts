@@ -12,10 +12,14 @@ import { mapCursorHistoryError, isMcpError } from "../errors.js";
  * Input schema for the migrate tool
  */
 const MigrateInputSchema = z.object({
-  sessionIndexes: z.array(z.number().int().min(1)).min(1),
+  sessionIndexes: z.array(z.number().int().min(1)).min(1).optional(),
+  sessionIds: z.array(z.string().min(1)).min(1).optional(),
   destination: z.string(),
   mode: z.enum(["move", "copy"]).default("move").optional(),
-});
+  workspace: z.string().min(1).optional(),
+  dryRun: z.boolean().optional(),
+}).refine(value => (value.sessionIndexes !== undefined) !== (value.sessionIds !== undefined),
+  "Provide exactly one of sessionIndexes or sessionIds");
 
 /**
  * Tool definition for MCP
@@ -23,10 +27,25 @@ const MigrateInputSchema = z.object({
 export const migrateTool = {
   name: "cursor_history_migrate",
   description:
-    "⚠️ DESTRUCTIVE: Move or copy chat sessions between workspaces. When moving (not copying), the original session is deleted. Consider creating a backup first using cursor_history_backup.",
+    "Move or copy eligible Composer sessions between workspaces. Store-only, merged-source and ambiguous sessions are refused. Use dryRun to preview. Moving removes the original; back up first.",
   inputSchema: {
     type: "object" as const,
     properties: {
+      sessionIds: {
+        type: "array",
+        items: { type: "string", minLength: 1 },
+        minItems: 1,
+        description: "Exact native UUIDs from list/search. Use instead of sessionIndexes for stable selection.",
+      },
+      workspace: {
+        type: "string",
+        description: "Source workspace scope; use the same scope that produced the session indexes.",
+      },
+      dryRun: {
+        type: "boolean",
+        description: "Preview without changing history (default: false).",
+        default: false,
+      },
       sessionIndexes: {
         type: "array",
         items: {
@@ -48,7 +67,11 @@ export const migrateTool = {
         default: "move",
       },
     },
-    required: ["sessionIndexes", "destination"],
+    required: ["destination"],
+    oneOf: [
+      { required: ["sessionIndexes"], not: { required: ["sessionIds"] } },
+      { required: ["sessionIds"], not: { required: ["sessionIndexes"] } },
+    ],
     additionalProperties: false,
   },
 };
@@ -62,14 +85,16 @@ export async function handleMigrate(
   try {
     const parsed = MigrateInputSchema.parse(args);
     const mode = parsed.mode ?? "move";
+    const sessions = parsed.sessionIds ?? parsed.sessionIndexes;
+    if (!sessions) throw new Error("Provide sessionIds or sessionIndexes");
 
-    // Convert 1-based indexes to 0-based for the library
-    const zeroBasedIndexes = parsed.sessionIndexes.map((i) => i - 1);
-
+    // v0.18 migration selectors are one-based (unlike public read indices).
     const results = await migrateSession({
-      sessions: zeroBasedIndexes,
+      sessions,
       destination: parsed.destination,
       mode: mode,
+      workspace: parsed.workspace,
+      dryRun: parsed.dryRun ?? false,
     });
 
     // Count successes and failures
@@ -82,7 +107,7 @@ export async function handleMigrate(
 
     if (successCount > 0) {
       lines.push(
-        `Successfully ${modeLabel} ${successCount} session(s) to:`,
+        `${parsed.dryRun ? "Preview: would have" : "Successfully"} ${modeLabel} ${successCount} session(s) to:`,
         `📁 ${parsed.destination}`,
         ""
       );

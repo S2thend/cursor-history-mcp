@@ -15,9 +15,16 @@ import {
   getLengthBucket,
   isQuestionFormat,
   processQuestion,
+  selectSafeSamples,
 } from "../../../src/tools/year-pack/analyzer.js";
 
 describe("analyzer", () => {
+  it("omits samples when maxSamples is zero", () => {
+    const question = processQuestion("How do I configure TypeScript in this project?", new Date("2025-06-15"));
+    expect(selectSafeSamples([question], 0)).toEqual({ questions: [], maxLength: 120 });
+    expect(selectSafeSamples([question], 1).questions).toHaveLength(1);
+  });
+
   describe("tokenize", () => {
     it("should tokenize text into words", () => {
       const result = tokenize("How do I use TypeScript?");

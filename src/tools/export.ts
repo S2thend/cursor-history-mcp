@@ -5,14 +5,15 @@
 import { exportSessionToMarkdown, exportSessionToJson } from "cursor-history";
 import { z } from "zod";
 import { mapCursorHistoryError, isMcpError } from "../errors.js";
+import { sessionSelectorShape, hasOneSelector, sessionSelectorProperties, sessionSelectorAlternatives, readSelector, readConfig } from "./history-context.js";
 
 /**
  * Input schema for the export tool
  */
 const ExportInputSchema = z.object({
-  sessionIndex: z.number().int().min(1),
+  ...sessionSelectorShape,
   format: z.enum(["markdown", "json"]).default("markdown").optional(),
-});
+}).refine(hasOneSelector, "Provide exactly one of sessionIndex or sessionId");
 
 /**
  * Tool definition for MCP
@@ -24,11 +25,7 @@ export const exportTool = {
   inputSchema: {
     type: "object" as const,
     properties: {
-      sessionIndex: {
-        type: "integer",
-        description: "The session index (1-based, as shown in list output)",
-        minimum: 1,
-      },
+      ...sessionSelectorProperties,
       format: {
         type: "string",
         description:
@@ -37,7 +34,7 @@ export const exportTool = {
         default: "markdown",
       },
     },
-    required: ["sessionIndex"],
+    oneOf: sessionSelectorAlternatives,
     additionalProperties: false,
   },
 };
@@ -53,13 +50,12 @@ export async function handleExport(
     const format = parsed.format ?? "markdown";
 
     // cursor-history uses 0-based indexing internally
-    const index = parsed.sessionIndex - 1;
+    const index = readSelector(parsed);
 
     if (format === "json") {
-      const result = await exportSessionToJson(index);
-      return JSON.stringify(result, null, 2);
+      return await exportSessionToJson(index, readConfig(parsed));
     } else {
-      const result = await exportSessionToMarkdown(index);
+      const result = await exportSessionToMarkdown(index, readConfig(parsed));
       return result;
     }
   } catch (error) {

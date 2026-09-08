@@ -8,6 +8,7 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import packageJson from "../package.json";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -60,7 +61,7 @@ function createServer(): Server {
   const server = new Server(
     {
       name: "cursor-history-mcp",
-      version: "0.1.0",
+      version: packageJson.version,
     },
     {
       capabilities: {

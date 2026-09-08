@@ -22,7 +22,7 @@ const RestoreInputSchema = z.object({
 export const restoreTool = {
   name: "cursor_history_restore",
   description:
-    "⚠️ DESTRUCTIVE: Restore Cursor AI chat history from a backup file. This operation OVERWRITES your current chat history. Consider creating a backup of your current data first using cursor_history_backup.",
+    "⚠️ DESTRUCTIVE: Restore Composer databases from a backup archive. This can overwrite Composer history; it does not restore Store databases, Agent transcripts or ACP stores. Back up current Composer data first.",
   inputSchema: {
     type: "object" as const,
     properties: {
@@ -33,7 +33,7 @@ export const restoreTool = {
       force: {
         type: "boolean",
         description:
-          "Skip confirmation and force overwrite of existing data (default: false)",
+          "Allow overwriting existing backup targets (default: false). The server has no interactive confirmation; obtain approval in the client.",
         default: false,
       },
     },
